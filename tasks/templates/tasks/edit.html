@@ -1,16 +1,17 @@
 {% extends "base.html" %}
 
 {% block main %}
-<h1>タスク編集ページ</h1>
+<h1>Task edit page</h1>
 <form action="{% url 'tasks:edit' task.id %}" method="post">
   {% csrf_token %}
   {{ form.as_p }}
-  <input type="submit" value="更新する">
+  <input type="submit" value="Edit">
 </form>
 
 <br>
 
-<a href="{% url 'tasks:detail' task.id %}">詳細</a> |
-<a href="{% url 'tasks:index' %}">戻る</a>
+<a href="{% url 'tasks:detail' task.id %}">Detail</a> |
+<a href="{% url 'tasks:index' %}">Back</a>
 
 {% endblock %}
+

@@ -1,6 +1,6 @@
 from django.db import models  # type: ignore
 from django.contrib.auth.models import AbstractUser  # type: ignore
-from django.utils import timezone
+from django.utils import timezone  # type: ignore
 
 # Create your models here.
 
