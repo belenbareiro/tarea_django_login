@@ -1,7 +1,7 @@
 from django.shortcuts import render  # type: ignore
 from django.shortcuts import redirect  # type: ignore
 from django.contrib.auth.decorators import login_required  # type: ignore
-from django.contrib.auth import authenticate, login as auth_login  # type: ignore # noqa
+from django.contrib.auth import login as auth_login  # type: ignore # noqa
 from django.contrib import messages  # type: ignore
 from .forms import (
     UserCreationForm,
@@ -9,6 +9,9 @@ from .forms import (
     UserUpdateForm,
     UserUpdatePasswordForm,
 )
+from .models import User
+
+# from django.http import HttpResponse
 
 
 # Register user
@@ -31,10 +34,7 @@ def login(request):
         form = UserLoginForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data.get("email")
-            password = form.cleaned_data.get("password")
-            user = authenticate(
-                request, username=email, password=password
-            )  # Use 'username' to pass email
+            user = User.objects.filter(email=email).first()
             if user is not None:
                 auth_login(request, user)
                 messages.success(request, f"Welcome {user.username}!")
@@ -50,38 +50,69 @@ def login(request):
     return render(request, "login.html", params)
 
 
-@login_required
+# @login_required
 def userdetail(request):
-    return render(request, "userdetail.html")
+    # print(request.user)
+    try:
+        _user = User.objects.get(pk=request.session["_auth_user_id"])
+        return render(request, "userdetail.html", {"user": _user})
+    except Exception:
+        return render(request, "userdetail.html")
 
 
-@login_required
+# @login_required
 def edit(request):
+    try:
+        _user = User.objects.get(pk=request.session["_auth_user_id"])
+    except Exception:
+        messages.error(request, "Please login first.")
+        return render(request, "userdetail.html")
     if request.method == "POST":
-        form = UserUpdateForm(request.POST, instance=request.user)
+        form = UserUpdateForm(request.POST, instance=_user)
         if form.is_valid():
             form.save()
             return redirect("user:userdetail")
-    return render(request, "edit.html")
+    else:
+        form = UserUpdateForm(instance=_user)
+
+    return render(request, "edit.html", {"form": form})
 
 
-@login_required
+# @login_required
 def delete(request):
+    try:
+        _user = User.objects.get(pk=request.session["_auth_user_id"])
+    except Exception:
+        messages.error(request, "Please login first.")
+        return render(request, "userdetail.html")
     if request.method == "POST":
-        request.user.delete()
+        _user.delete()
         return redirect("user:login")
     return render(request, "delete.html")
 
 
 def change_password(request):
+    # print(request.user)
+    try:
+        _user = User.objects.get(pk=request.session["_auth_user_id"])
+    except Exception:
+        messages.error(request, "Please login first.")
+        return render(request, "userdetail.html")
     if request.method == "POST":
-        form = UserUpdatePasswordForm(request.POST)
+        form = UserUpdatePasswordForm(data=request.POST)
         if form.is_valid():
-            user = request.user
-            user.set_password(form.cleaned_data["new_password"])
-            user.save()
+            _old_password = form.cleaned_data["old_password"]
+            if not _user.check_password(_old_password):
+                form.add_error("old_password", "Incorrect password")
+                return redirect("user:change_password")
+            _user.set_password(form.cleaned_data["new_password"])
+            _user.save()
+            messages.success(request, "Password changed successfully.")
             return redirect("user:login")
-    return render(request, "change_password.html")
+    else:
+        form = UserUpdatePasswordForm()
+
+    return render(request, "change_password.html", {"form": form})
 
 
 def logout(request):

@@ -99,10 +99,6 @@ class UserUpdatePasswordForm(forms.Form):
 
     def clean(self):
         cleaned_data = super().clean()
-        old_password = cleaned_data.get("old_password")
-        # Check if old password is correct
-        if not self.user.check_password(old_password):
-            raise forms.ValidationError("Incorrect password")
         password = cleaned_data.get("new_password")
         confirm_password = cleaned_data.get("confirm_password")
         if password != confirm_password:

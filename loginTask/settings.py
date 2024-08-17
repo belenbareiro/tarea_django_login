@@ -106,12 +106,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTHENTICATION_BACKENDS = [
-    "user.backends.EmailBackend",
-    "django.contrib.auth.backends.ModelBackend",
-]
 
-print(AUTHENTICATION_BACKENDS)
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
@@ -123,6 +118,7 @@ USE_I18N = True
 
 USE_TZ = True
 
+LOGIN_URL = "/user/login"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
