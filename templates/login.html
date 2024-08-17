@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+
+{% block main %}
+    <h1>Login</h1>
+    <form action="" method="post">
+        {% csrf_token %}
+        <div style="margin-left:10px; margin-top:10px">
+            <p class="font-monospace">{{ form }}</p>
+        </div>
+        <input type="submit" value="login">
+    </form>
+{% endblock %}
