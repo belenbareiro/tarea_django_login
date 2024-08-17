@@ -15,10 +15,19 @@
         <li><a href="{% url 'tasks:index' %}">Home</a></li>
         <li><a href="{% url 'user:login' %}">Login</a></li>
         <li><a href="{% url 'user:signup' %}">Signup</a></li>
+        <li><a href="{% url 'user:userdetails' %}">Account Details</a></li>
+        <li><a href="{% url 'user:logout' %}">Logout</a></li>
       </ul>
     </nav>
     <main>
       <div>
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
         {% block main %}
         {% endblock %}
       </div>

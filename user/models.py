@@ -32,5 +32,7 @@ class User(AbstractUser):
         verbose_name=("user permissions"),
     )
 
+    USERNAME_FIELD = "email"
+
     def __str__(self):
         return self.username

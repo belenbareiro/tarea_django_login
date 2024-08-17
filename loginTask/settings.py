@@ -106,11 +106,16 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = [
+    "user.backends.EmailBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
 
+print(AUTHENTICATION_BACKENDS)
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = "ja"
+LANGUAGE_CODE = "es"
 
 TIME_ZONE = "America/Asuncion"
 
