@@ -1,0 +1,26 @@
+{% load static %}
+
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <title>Task</title>
+    <link rel="stylesheet" href="{% static 'tasks/css/normalize.css' %}">
+    <link rel="stylesheet" href="{% static 'tasks/css/style.css' %}">
+  </head>
+
+  <body>
+    <nav>
+      <ul>
+        <li><a href="{% url 'tasks:index' %}">タスク一覧</a></li>
+      </ul>
+    </nav>
+    <main>
+      <div>
+        {% block main %}
+        {% endblock %}
+      </div>
+    </main>
+  </body>
+
+</html>
