@@ -3,9 +3,29 @@ from django.shortcuts import redirect  # type: ignore
 from django.contrib.auth.decorators import login_required  # type: ignore
 from django.contrib.auth import authenticate, login as auth_login  # type: ignore # noqa
 from django.contrib import messages  # type: ignore
-from .forms import UserCreationForm, UserLoginForm
+from .forms import (
+    UserCreationForm,
+    UserLoginForm,
+    UserUpdateForm,
+    UserUpdatePasswordForm,
+)
 
 
+# Register user
+def signup(request):
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("user:login")
+    else:
+        form = UserCreationForm()
+
+    params = {"form": form}
+    return render(request, "signup.html", params)
+
+
+# Login
 def login(request):
     if request.method == "POST":
         form = UserLoginForm(request.POST)
@@ -31,21 +51,37 @@ def login(request):
 
 
 @login_required
-def showaccountdetails(request):
-    return render(request, "showaccountdetails.html")
+def userdetail(request):
+    return render(request, "userdetail.html")
 
 
-def signup(request):
+@login_required
+def edit(request):
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
+        form = UserUpdateForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
-            return redirect("user:login")
-    else:
-        form = UserCreationForm()
+            return redirect("user:userdetail")
+    return render(request, "edit.html")
 
-    params = {"form": form}
-    return render(request, "signup.html", params)
+
+@login_required
+def delete(request):
+    if request.method == "POST":
+        request.user.delete()
+        return redirect("user:login")
+    return render(request, "delete.html")
+
+
+def change_password(request):
+    if request.method == "POST":
+        form = UserUpdatePasswordForm(request.POST)
+        if form.is_valid():
+            user = request.user
+            user.set_password(form.cleaned_data["new_password"])
+            user.save()
+            return redirect("user:login")
+    return render(request, "change_password.html")
 
 
 def logout(request):

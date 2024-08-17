@@ -2,13 +2,15 @@
 
 
 {% block main %}
-    <h1>Full Membership Registration Form</h1>
+    <h1>Cancel Registration</h1>
 
     <!-- Displaying logged-in user details -->
     <div>
         <p><strong>Username:</strong> {{ user.username }}</p>
         <p><strong>Email Address:</strong> {{ user.email }}</p>
         <p><strong>Age:</strong> {{ user.age }}</p>
-        <p><strong>Status:</strong> Password Created</p>
+        <div>
+            <button type="submit">Cancel your membership</button>
+        </div>
     </div>
 {% endblock %}

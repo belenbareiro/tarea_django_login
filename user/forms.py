@@ -54,3 +54,57 @@ class UserLoginForm(forms.Form):
         if not user.check_password(password):
             raise forms.ValidationError("Wrong password")
         return self.cleaned_data
+
+
+class UserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ["username", "email", "age"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["username"].widget.attrs.update({"class": "form-control"})
+        self.fields["email"].widget.attrs.update({"class": "form-control"})
+        self.fields["age"].widget.attrs.update({"class": "form-control"})
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        if commit:
+            user.save()
+        return user
+
+
+class UserUpdatePasswordForm(forms.Form):
+    old_password = forms.CharField(
+        widget=forms.PasswordInput, label="Current Password"
+    )  # noqa
+    new_password = forms.CharField(
+        widget=forms.PasswordInput, label="New Password"
+    )  # noqa
+    confirm_password = forms.CharField(
+        widget=forms.PasswordInput, label="Confirm New Password"
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["old_password"].widget.attrs.update(
+            {"class": "form-control"}
+        )  # noqa
+        self.fields["new_password"].widget.attrs.update(
+            {"class": "form-control"}
+        )  # noqa
+        self.fields["confirm_password"].widget.attrs.update(
+            {"class": "form-control"}
+        )  # noqa
+
+    def clean(self):
+        cleaned_data = super().clean()
+        old_password = cleaned_data.get("old_password")
+        # Check if old password is correct
+        if not self.user.check_password(old_password):
+            raise forms.ValidationError("Incorrect password")
+        password = cleaned_data.get("new_password")
+        confirm_password = cleaned_data.get("confirm_password")
+        if password != confirm_password:
+            raise forms.ValidationError("Passwords do not match")
+        return cleaned_data
